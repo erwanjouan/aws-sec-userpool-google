@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A Cognito User Pool based on Google
+Parameters:
+  ClientSecret:
+    Type: String
+
+Resources:
+  CognitoUserPoolIdentityProvider:
+    Properties:
+      ProviderName: Google
+      AttributeMapping:
+        email: email
+      ProviderDetails:
+        client_id: 70957737117-ialsbh05oq0u1abo0oemb064qsqibpmp.apps.googleusercontent.com
+        client_secret: !Ref ClientSecret
+        authorize_scopes: email openid
+      ProviderType: Google
+      UserPoolId: !Ref CognitoUserPool
+    Type: AWS::Cognito::UserPoolIdentityProvider
+
+  CognitoUserPool:
+    Properties:
+      AliasAttributes:
+        - phone_number
+        - email
+        - preferred_username
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+    Type: AWS::Cognito::UserPool
+
+  CognitoUserPoolAppClient:
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      AllowedOAuthFlowsUserPoolClient: true
+      CallbackURLs:
+        - https://www.example.com/cb
+      LogoutURLs:
+        - https://www.example.com/signout
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthScopes:
+        - phone
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+    Type: AWS::Cognito::UserPoolClient
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      Domain: the-atomicity
