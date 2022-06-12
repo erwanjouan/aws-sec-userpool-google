@@ -5,18 +5,6 @@ Parameters:
     Type: String
 
 Resources:
-  CognitoUserPoolIdentityProvider:
-    Properties:
-      ProviderName: Google
-      AttributeMapping:
-        email: email
-      ProviderDetails:
-        client_id: 70957737117-ialsbh05oq0u1abo0oemb064qsqibpmp.apps.googleusercontent.com
-        client_secret: !Ref ClientSecret
-        authorize_scopes: email openid
-      ProviderType: Google
-      UserPoolId: !Ref CognitoUserPool
-    Type: AWS::Cognito::UserPoolIdentityProvider
 
   CognitoUserPool:
     Properties:
@@ -29,6 +17,19 @@ Resources:
           Required: true
           Mutable: true
     Type: AWS::Cognito::UserPool
+
+  CognitoUserPoolIdentityProvider:
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ProviderName: Google
+      AttributeMapping:
+        email: email
+      ProviderDetails:
+        client_id: 70957737117-ialsbh05oq0u1abo0oemb064qsqibpmp.apps.googleusercontent.com
+        client_secret: !Ref ClientSecret
+        authorize_scopes: email openid
+      ProviderType: Google
+    Type: AWS::Cognito::UserPoolIdentityProvider
 
   CognitoUserPoolAppClient:
     Properties:
